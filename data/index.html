@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코더랜드 고객 만족도 대시보드</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #f7f6f3;
+  --card: #ffffff;
+  --border: #e8e6df;
+  --text: #1a1a18;
+  --muted: #6b6b65;
+  --accent: #2f5fc4;
+  --accent2: #1da575;
+  --accent3: #e05c2a;
+  --pill-bg: #eef2fc;
+  --pill-text: #1d3f99;
+  --warn-bg: #fef3ee;
+  --warn-text: #a03a10;
+  --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+/* Layout */
+.header { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 2rem; position: sticky; top: 0; z-index: 100; }
+.header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; }
+.logo-name { font-size: 15px; font-weight: 600; }
+.logo-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+.survey-select { display: flex; align-items: center; gap: 8px; }
+.survey-select label { font-size: 12px; color: var(--muted); }
+.survey-select select { font-size: 13px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; }
+
+.nav { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 2rem; }
+.nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; }
+.nav-btn { padding: 12px 16px; font-size: 13px; color: var(--muted); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all .15s; }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.nav-btn:hover { color: var(--text); }
+
+.main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+
+/* Tabs */
+.tab { display: none; }
+.tab.active { display: block; }
+
+/* KPI Grid */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+.kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; }
+.kpi-val { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+.kpi-val span { font-size: 14px; font-weight: 400; color: var(--muted); }
+.kpi-label { font-size: 12px; color: var(--muted); margin-top: 5px; }
+.kpi-sub { font-size: 11px; color: var(--accent); margin-top: 2px; font-weight: 500; }
+
+/* Section */
+.section { margin-bottom: 1.75rem; }
+.section-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
+.section-title::before { content: ''; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; display: inline-block; }
+
+/* Two col */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+@media(max-width: 700px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+/* Card */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; }
+.card-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; color: var(--text); }
+
+/* Bar rows */
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.bar-label { font-size: 12px; color: var(--muted); flex: 0 0 130px; line-height: 1.3; }
+.bar-label.wide { flex: 0 0 160px; }
+.bar-label.narrow { flex: 0 0 80px; }
+.bar-track { flex: 1; height: 7px; background: #efefeb; border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width .5s ease; }
+.bar-val { font-size: 12px; color: var(--text); font-weight: 600; flex: 0 0 30px; text-align: right; }
+
+/* Star dist */
+.star-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.star-num { font-size: 12px; color: var(--muted); width: 16px; text-align: right; }
+.star-track { flex: 1; height: 7px; background: #efefeb; border-radius: 4px; overflow: hidden; }
+.star-fill { height: 100%; border-radius: 4px; }
+.star-cnt { font-size: 11px; color: var(--muted); width: 32px; text-align: right; }
+
+/* Pills */
+.pill-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); background: var(--bg); }
+.pill.accent { background: var(--pill-bg); color: var(--pill-text); border-color: #c5d2f0; }
+.pill.warn { background: var(--warn-bg); color: var(--warn-text); border-color: #f5c4a8; }
+
+/* Comment list */
+.comment-list { list-style: none; }
+.comment-list li { font-size: 13px; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--border); line-height: 1.6; display: flex; gap: 8px; }
+.comment-list li:last-child { border-bottom: none; }
+.comment-list li::before { content: '›'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+/* Chart canvas */
+.chart-wrap { position: relative; }
+
+/* Score badge */
+.score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.score-big { font-size: 36px; font-weight: 700; color: var(--accent); }
+.score-big span { font-size: 16px; color: var(--muted); font-weight: 400; }
+.score-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* Trend note */
+.trend-note { background: #f0f4ff; border: 1px solid #c5d2f0; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #1d3f99; margin-bottom: 1rem; }
+
+/* Empty state */
+.empty { text-align: center; padding: 3rem; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">CL</div>
+      <div>
+        <div class="logo-name">코더랜드 만족도 대시보드</div>
+        <div class="logo-sub" id="survey-period">데이터 로딩 중...</div>
+      </div>
+    </div>
+    <div class="survey-select">
+      <label>회차 선택</label>
+      <select id="survey-picker" onchange="loadSurvey(this.value)">
+        <option value="data/survey_2026_H1.json">2026 상반기</option>
+        <!-- 다음 설문 추가 시 여기에 한 줄 추가 -->
+        <!-- <option value="data/survey_2026_H2.json">2026 하반기</option> -->
+      </select>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="switchTab('kpi',this)">개요</button>
+    <button class="nav-btn" onclick="switchTab('scores',this)">만족도 분석</button>
+    <button class="nav-btn" onclick="switchTab('members',this)">수강생 현황</button>
+    <button class="nav-btn" onclick="switchTab('programs',this)">프로그램·관심</button>
+    <button class="nav-btn" onclick="switchTab('qualitative',this)">주관식 분석</button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ── TAB: 개요 ── -->
+<div id="tab-kpi" class="tab active">
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <div class="section">
+    <div class="section-title">카테고리별 만족도 (5점 만점)</div>
+    <div class="card" id="score-bars"></div>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <div class="section-title">종합 만족도 분포 (10점 만점)</div>
+      <div class="card"><div class="chart-wrap" style="height:200px"><canvas id="overallChart"></canvas></div></div>
+    </div>
+    <div class="section">
+      <div class="section-title">수강 결정 만족도 (5점 만점)</div>
+      <div class="card"><div class="chart-wrap" style="height:200px"><canvas id="satChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TAB: 만족도 분석 ── -->
+<div id="tab-scores" class="tab">
+  <div class="two-col" style="margin-bottom:1.5rem">
+    <div class="card">
+      <div class="card-title">튜터 만족도 분포</div>
+      <div id="dist-tutor"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">커리큘럼 만족도 분포</div>
+      <div id="dist-curriculum"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">화상 수업 환경 만족도</div>
+      <div id="dist-online"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">운영 서비스 만족도</div>
+      <div id="dist-ops"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">수강 지속을 위해 필요한 것 (복수 응답)</div>
+    <div class="card" id="needs-bars"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">튜터 만족 이유 키워드</div>
+    <div class="card"><div class="pill-grid" id="tutor-good-pills"></div></div>
+  </div>
+</div>
+
+<!-- ── TAB: 수강생 현황 ── -->
+<div id="tab-members" class="tab">
+  <div class="two-col" style="margin-bottom:1.5rem">
+    <div class="section">
+      <div class="section-title">수강 과정별 분포</div>
+      <div class="card"><div class="chart-wrap" style="height:200px"><canvas id="courseChart"></canvas></div></div>
+    </div>
+    <div class="section">
+      <div class="section-title">학년별 분포</div>
+      <div class="card"><div class="chart-wrap" style="height:200px"><canvas id="gradeChart"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">수강 기간 분포</div>
+    <div class="card"><div class="chart-wrap" style="height:180px"><canvas id="durationChart"></canvas></div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <div class="section-title">처음 등록 계기 (복수 응답)</div>
+      <div class="card" id="register-bars"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">등록 전 걱정·망설임 (복수 응답)</div>
+      <div class="card" id="worry-bars"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">코딩을 배우는 목적 (복수 응답)</div>
+    <div class="card" id="purpose-bars"></div>
+  </div>
+</div>
+
+<!-- ── TAB: 프로그램·관심 ── -->
+<div id="tab-programs" class="tab">
+  <div class="two-col" style="margin-bottom:1.5rem">
+    <div class="section">
+      <div class="section-title">부가 프로그램 참여 경험</div>
+      <div class="card"><div class="chart-wrap" style="height:180px"><canvas id="progPartChart"></canvas></div></div>
+    </div>
+    <div class="section">
+      <div class="section-title">재참여 희망 (참여 경험자)</div>
+      <div class="card" id="prog-yes-bars"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">관심 프로그램 (미참여자)</div>
+    <div class="card" id="prog-no-bars"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">장기 수강 유지 핵심 이유 (1년 이상)</div>
+    <div class="card" id="longterm-bars"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">미래 희망 방향 (복수 응답)</div>
+    <div class="card" id="future-bars"></div>
+  </div>
+</div>
+
+<!-- ── TAB: 주관식 분석 ── -->
+<div id="tab-qualitative" class="tab">
+  <div class="section">
+    <div class="section-title">칭찬 키워드</div>
+    <div class="card">
+      <div class="pill-grid">
+        <span class="pill accent">1:1 맞춤 수업 ★★★</span>
+        <span class="pill accent">상세한 피드백 ★★★</span>
+        <span class="pill accent">튜터 친절함 ★★★</span>
+        <span class="pill accent">수업 알림 ★</span>
+        <span class="pill accent">스케줄 유연성 ★</span>
+        <span class="pill accent">화상 수업 편의 ★</span>
+        <span class="pill accent">1:1 밀착관리 ★</span>
+        <span class="pill accent">아이 만족도 ★</span>
+        <span class="pill accent">소통 잘 됨 ★</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">개선 요청 키워드</div>
+    <div class="card">
+      <div class="pill-grid">
+        <span class="pill warn">가격 인하 ★★★</span>
+        <span class="pill warn">수업 시간 연장 ★★</span>
+        <span class="pill warn">소통 채널 개선 ★</span>
+        <span class="pill warn">재수강 혜택 ★</span>
+        <span class="pill warn">공지 알림 개선 ★</span>
+        <span class="pill">자습 시간 강화</span>
+        <span class="pill">이벤트 확대</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <div class="section-title">👍 마음에 드는 점 — 응답 샘플</div>
+      <div class="card"><ul class="comment-list" id="best-list"></ul></div>
+    </div>
+    <div class="section">
+      <div class="section-title">🔧 개선 요청 — 응답 샘플</div>
+      <div class="card"><ul class="comment-list" id="improve-list"></ul></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ── 색상 팔레트 ──
+const COLORS = ['#2f5fc4','#1da575','#e05c2a','#9066d4','#c49a0a','#888880'];
+const LIGHT  = ['#dce8fb','#d0f2e7','#fde5d9','#ede0fb','#fdf3d0','#efefeb'];
+
+let charts = {};
+let currentData = null;
+
+// ── 탭 전환 ──
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── 데이터 로드 ──
+async function loadSurvey(path) {
+  try {
+    const res = await fetch(path);
+    if (!res.ok) throw new Error('파일을 찾을 수 없습니다');
+    const data = await res.json();
+    currentData = data;
+    renderAll(data);
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+// ── 전체 렌더링 ──
+function renderAll(d) {
+  document.getElementById('survey-period').textContent = d.survey_title + ' · ' + d.survey_period + ' · 응답 ' + d.total + '명';
+
+  renderKPI(d);
+  renderScoreBars(d);
+  renderOverallChart(d);
+  renderSatChart(d);
+  renderDists(d);
+  renderNeedsBar(d);
+  renderTutorPills(d);
+  renderCourseChart(d);
+  renderGradeChart(d);
+  renderDurationChart(d);
+  renderBarSection('register-bars', d.register, '#2f5fc4');
+  renderBarSection('worry-bars', d.worry, '#e05c2a');
+  renderBarSection('purpose-bars', d.purpose, '#2f5fc4');
+  renderProgPartChart(d);
+  renderBarSection('prog-yes-bars', d.prog_yes, '#1da575');
+  renderBarSection('prog-no-bars', d.prog_no, '#9066d4');
+  renderBarSection('longterm-bars', d.longterm, '#1da575');
+  renderBarSection('future-bars', d.future, '#2f5fc4');
+  renderComments('best-list', d.best);
+  renderComments('improve-list', d.improve);
+}
+
+// ── KPI ──
+function renderKPI(d) {
+  const items = [
+    { val: d.scores.overall, unit: '/10', label: '종합 만족도', sub: '평균 점수' },
+    { val: d.scores.tutor,   unit: '/5',  label: '튜터 만족도', sub: (d.scores.tutor/5*100).toFixed(0)+'%' },
+    { val: d.scores.curriculum, unit: '/5', label: '커리큘럼 만족도', sub: (d.scores.curriculum/5*100).toFixed(0)+'%' },
+    { val: d.scores.ops,     unit: '/5',  label: '운영 서비스', sub: (d.scores.ops/5*100).toFixed(0)+'%' },
+    { val: d.total,          unit: '명',  label: '총 응답자', sub: 'MAU 530명 대비 ' + (d.total/530*100).toFixed(0)+'%' },
+  ];
+  document.getElementById('kpi-grid').innerHTML = items.map(i =>
+    `<div class="kpi-card">
+      <div class="kpi-val">${i.val}<span>${i.unit}</span></div>
+      <div class="kpi-label">${i.label}</div>
+      <div class="kpi-sub">${i.sub}</div>
+    </div>`
+  ).join('');
+}
+
+// ── 카테고리 점수 바 ──
+function renderScoreBars(d) {
+  const items = [
+    { label: '튜터 만족도', val: d.scores.tutor, max: 5, color: '#2f5fc4' },
+    { label: '운영 서비스', val: d.scores.ops,   max: 5, color: '#1da575' },
+    { label: '화상 수업 환경', val: d.scores.online, max: 5, color: '#9066d4' },
+    { label: '커리큘럼',    val: d.scores.curriculum, max: 5, color: '#e05c2a' },
+  ];
+  document.getElementById('score-bars').innerHTML = items.map(i =>
+    `<div class="bar-row">
+      <div class="bar-label">${i.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${i.val/i.max*100}%;background:${i.color}"></div></div>
+      <div class="bar-val">${i.val.toFixed(2)}</div>
+    </div>`
+  ).join('');
+}
+
+// ── 차트 헬퍼 ──
+function makeChart(id, type, labels, data, colors, options={}) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, {
+    type,
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y !== undefined ? ctx.parsed.y+'명' : ctx.parsed+'명' } } },
+      scales: type === 'bar' ? {
+        x: { ticks: { font: { size: 11 }, color: '#888' }, grid: { display: false } },
+        y: { ticks: { font: { size: 11 }, color: '#888' }, grid: { color: '#f0eeea' } }
+      } : {},
+      ...options
+    }
+  });
+}
+
+function renderOverallChart(d) {
+  const dist = d.dist.overall;
+  const labels = Object.keys(dist).map(k => k+'점');
+  const vals = Object.values(dist);
+  makeChart('overallChart','bar',labels,vals,['#c9d7f7','#b5c9f5','#9ab4f0','#7099eb','#4370d6','#2f5fc4']);
+}
+
+function renderSatChart(d) {
+  const dist = d.dist_sat || {'3':11,'4':41,'5':80};
+  makeChart('satChart','bar',['3점','4점','5점'],[11,41,80],['#fbe5d9','#f5bc9b','#e05c2a']);
+}
+
+function renderDists(d) {
+  renderStarDist('dist-tutor', d.dist.tutor, 5, '#2f5fc4');
+  renderStarDist('dist-curriculum', d.dist.curriculum, 5, '#1da575');
+  renderStarDist('dist-online', d.dist.online, 5, '#9066d4');
+  renderStarDist('dist-ops', d.dist.ops, 5, '#e05c2a');
+}
+
+function renderStarDist(id, dist, max, color) {
+  const total = Object.values(dist).reduce((a,b)=>a+b,0);
+  const maxVal = Math.max(...Object.values(dist));
+  let html = '';
+  for (let i = 1; i <= max; i++) {
+    const cnt = dist[String(i)] || 0;
+    html += `<div class="star-row">
+      <div class="star-num">${i}</div>
+      <div class="star-track"><div class="star-fill" style="width:${cnt/maxVal*100}%;background:${color}"></div></div>
+      <div class="star-cnt">${cnt}명</div>
+    </div>`;
+  }
+  document.getElementById(id).innerHTML = html;
+}
+
+function renderNeedsBar(d) {
+  const items = d.needs;
+  const max = Math.max(...Object.values(items));
+  document.getElementById('needs-bars').innerHTML = Object.entries(items).map(([k,v]) =>
+    `<div class="bar-row">
+      <div class="bar-label wide">${k}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%;background:#2f5fc4"></div></div>
+      <div class="bar-val">${v}</div>
+    </div>`
+  ).join('');
+}
+
+function renderTutorPills(d) {
+  const keywords = ['상세한 피드백','친절한 설명','아이와 소통','눈높이 맞춤','꼼꼼한 수업','칭찬·격려','빠른 응답','수업 조절'];
+  document.getElementById('tutor-good-pills').innerHTML = keywords.map(k =>
+    `<span class="pill accent">${k}</span>`
+  ).join('');
+}
+
+function renderBarSection(id, obj, color) {
+  if (!obj || !document.getElementById(id)) return;
+  const max = Math.max(...Object.values(obj));
+  document.getElementById(id).innerHTML = Object.entries(obj).map(([k,v]) =>
+    `<div class="bar-row">
+      <div class="bar-label wide">${k}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%;background:${color}"></div></div>
+      <div class="bar-val">${v}</div>
+    </div>`
+  ).join('');
+}
+
+function renderCourseChart(d) {
+  makeChart('courseChart','doughnut',
+    Object.keys(d.course), Object.values(d.course),
+    ['#2f5fc4','#1da575','#e05c2a','#9066d4'],
+    { plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, color: '#888', boxWidth: 10 } },
+      tooltip: { callbacks: { label: ctx => ctx.label+': '+ctx.parsed+'명' } } } }
+  );
+}
+
+function renderGradeChart(d) {
+  makeChart('gradeChart','doughnut',
+    Object.keys(d.grade), Object.values(d.grade),
+    ['#2f5fc4','#5b85d8','#8aaee8','#b5cef4'],
+    { plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, color: '#888', boxWidth: 10 } },
+      tooltip: { callbacks: { label: ctx => ctx.label+': '+ctx.parsed+'명' } } } }
+  );
+}
+
+function renderDurationChart(d) {
+  makeChart('durationChart','bar',
+    Object.keys(d.duration), Object.values(d.duration),
+    ['#b5cef4','#5b85d8','#2f5fc4','#1a3d99']
+  );
+}
+
+function renderProgPartChart(d) {
+  makeChart('progPartChart','doughnut',
+    ['참여 경험 있음','미참여'], [98,102],
+    ['#2f5fc4','#e8e6df'],
+    { plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, color: '#888', boxWidth: 10 } },
+      tooltip: { callbacks: { label: ctx => ctx.label+': '+ctx.parsed+'명' } } } }
+  );
+}
+
+function renderComments(id, list) {
+  if (!list || !list.length) return;
+  document.getElementById(id).innerHTML = list.slice(0, 8).map(t =>
+    `<li>${t}</li>`
+  ).join('');
+}
+
+// ── 초기 로드 ──
+loadSurvey('data/survey_2026_H1.json');
+</script>
+</body>
+</html>
