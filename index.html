@@ -7,104 +7,93 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root {
-  --bg: #f7f6f3;
-  --card: #ffffff;
-  --border: #e8e6df;
-  --text: #1a1a18;
-  --muted: #6b6b65;
-  --accent: #2f5fc4;
-  --accent2: #1da575;
-  --accent3: #e05c2a;
-  --pill-bg: #eef2fc;
-  --pill-text: #1d3f99;
-  --warn-bg: #fef3ee;
-  --warn-text: #a03a10;
-  --short-bg: #f0f7ff;
-  --short-border: #bdd4f5;
-  --long-bg: #f0fbf6;
-  --long-border: #a8e4cc;
-  --radius: 12px;
+  --bg:#f7f6f3; --card:#fff; --border:#e8e6df; --text:#1a1a18; --muted:#6b6b65;
+  --accent:#2f5fc4; --accent2:#1da575; --accent3:#e05c2a;
+  --pill-bg:#eef2fc; --pill-text:#1d3f99;
+  --warn-bg:#fef3ee; --warn-text:#a03a10;
+  --short-bg:#f0f7ff; --short-border:#bdd4f5;
+  --long-bg:#f0fbf6;  --long-border:#a8e4cc;
+  --radius:12px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
 
-.header { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 2rem; position: sticky; top: 0; z-index: 100; }
-.header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; }
-.logo-name { font-size: 15px; font-weight: 600; }
-.logo-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
-.survey-select { display: flex; align-items: center; gap: 8px; }
-.survey-select label { font-size: 12px; color: var(--muted); }
-.survey-select select { font-size: 13px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; }
+.header{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:100}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+.logo-name{font-size:15px;font-weight:600}
+.logo-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.survey-select{display:flex;align-items:center;gap:8px}
+.survey-select label{font-size:12px;color:var(--muted)}
+.survey-select select{font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer}
 
-.nav { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 2rem; }
-.nav-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; }
-.nav-btn { padding: 12px 16px; font-size: 13px; color: var(--muted); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all .15s; }
-.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
-.nav-btn:hover { color: var(--text); }
+.nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;overflow-x:auto}
+.nav-btn{padding:12px 16px;font-size:13px;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.nav-btn:hover{color:var(--text)}
 
-.main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+.main{max-width:1100px;margin:0 auto;padding:1.5rem 2rem 3rem}
+.tab{display:none}.tab.active{display:block}
 
-.tab { display: none; }
-.tab.active { display: block; }
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.5rem}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem}
+.kpi-val{font-size:28px;font-weight:700;line-height:1}
+.kpi-val span{font-size:14px;font-weight:400;color:var(--muted)}
+.kpi-label{font-size:12px;color:var(--muted);margin-top:5px}
+.kpi-sub{font-size:11px;color:var(--accent);margin-top:2px;font-weight:500}
 
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
-.kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; }
-.kpi-val { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
-.kpi-val span { font-size: 14px; font-weight: 400; color: var(--muted); }
-.kpi-label { font-size: 12px; color: var(--muted); margin-top: 5px; }
-.kpi-sub { font-size: 11px; color: var(--accent); margin-top: 2px; font-weight: 500; }
+.section{margin-bottom:1.75rem}
+.section-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+.section-title::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px;display:inline-block}
 
-.section { margin-bottom: 1.75rem; }
-.section-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
-.section-title::before { content: ''; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; display: inline-block; }
+.segment-section{margin-bottom:1.75rem;border-radius:var(--radius);padding:1.25rem}
+.segment-section.short{background:var(--short-bg);border:1px solid var(--short-border)}
+.segment-section.long{background:var(--long-bg);border:1px solid var(--long-border)}
+.segment-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin-bottom:10px}
+.segment-badge.short{background:#dce8fb;color:#1d3f99}
+.segment-badge.long{background:#d0f2e7;color:#0b6e4f}
+.segment-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:1rem}
 
-/* 대상자 구분 섹션 */
-.segment-section { margin-bottom: 1.75rem; border-radius: var(--radius); padding: 1.25rem; }
-.segment-section.short { background: var(--short-bg); border: 1px solid var(--short-border); }
-.segment-section.long  { background: var(--long-bg);  border: 1px solid var(--long-border); }
-.segment-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; margin-bottom: 10px; }
-.segment-badge.short { background: #dce8fb; color: #1d3f99; }
-.segment-badge.long  { background: #d0f2e7; color: #0b6e4f; }
-.segment-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 1rem; }
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}}
 
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-@media(max-width: 700px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem}
+.card-title{font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text)}
+.card-inset{background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.06);border-radius:10px;padding:1rem 1.25rem}
 
-.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; }
-.card-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; color: var(--text); }
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.bar-label{font-size:12px;color:var(--muted);flex:0 0 170px;line-height:1.3}
+.bar-track{flex:1;height:7px;background:#efefeb;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.bar-val{font-size:11px;color:var(--text);font-weight:500;flex:0 0 80px;text-align:right}
 
-/* 투명 카드 (segment 안에서 사용) */
-.card-inset { background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06); border-radius: 10px; padding: 1rem 1.25rem; }
+.star-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.star-num{font-size:12px;color:var(--muted);width:16px;text-align:right}
+.star-track{flex:1;height:7px;background:#efefeb;border-radius:4px;overflow:hidden}
+.star-fill{height:100%;border-radius:4px}
+.star-cnt{font-size:11px;color:var(--muted);width:90px;text-align:right}
 
-.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
-.bar-label { font-size: 12px; color: var(--muted); flex: 0 0 160px; line-height: 1.3; }
-.bar-label.narrow { flex: 0 0 90px; }
-.bar-track { flex: 1; height: 7px; background: #efefeb; border-radius: 4px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 4px; transition: width .5s ease; }
-.bar-val { font-size: 11px; color: var(--text); font-weight: 500; flex: 0 0 72px; text-align: right; }
+/* 도넛 차트 비율 툴팁은 JS에서 처리 */
 
-.star-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.star-num { font-size: 12px; color: var(--muted); width: 16px; text-align: right; }
-.star-track { flex: 1; height: 7px; background: #efefeb; border-radius: 4px; overflow: hidden; }
-.star-fill { height: 100%; border-radius: 4px; }
-.star-cnt { font-size: 11px; color: var(--muted); width: 72px; text-align: right; }
+.pill-grid{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);background:var(--bg)}
+.pill.accent{background:var(--pill-bg);color:var(--pill-text);border-color:#c5d2f0}
+.pill.warn{background:var(--warn-bg);color:var(--warn-text);border-color:#f5c4a8}
+.pill.green{background:#d0f2e7;color:#0b6e4f;border-color:#a8e4cc}
 
-.pill-grid { display: flex; flex-wrap: wrap; gap: 6px; }
-.pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); background: var(--bg); }
-.pill.accent { background: var(--pill-bg); color: var(--pill-text); border-color: #c5d2f0; }
-.pill.warn { background: var(--warn-bg); color: var(--warn-text); border-color: #f5c4a8; }
-.pill.green { background: #d0f2e7; color: #0b6e4f; border-color: #a8e4cc; }
+.comment-list{list-style:none}
+.comment-list li{font-size:13px;color:var(--muted);padding:8px 0;border-bottom:1px solid var(--border);line-height:1.7;display:flex;gap:8px}
+.comment-list li:last-child{border-bottom:none}
+.comment-list li::before{content:'›';color:var(--accent);font-weight:700;flex-shrink:0;margin-top:1px}
 
-.comment-list { list-style: none; }
-.comment-list li { font-size: 13px; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--border); line-height: 1.6; display: flex; gap: 8px; }
-.comment-list li:last-child { border-bottom: none; }
-.comment-list li::before { content: '›'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+/* 기타 섹션 */
+.etc-box{background:#fafaf8;border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;margin-top:12px}
+.etc-label{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px}
 
-.chart-wrap { position: relative; }
-.divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+.chart-wrap{position:relative}
+.divider{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
 </style>
 </head>
 <body>
@@ -140,7 +129,7 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
 
 <main class="main">
 
-<!-- ── TAB: 개요 ── -->
+<!-- ── 개요 ── -->
 <div id="tab-kpi" class="tab active">
   <div class="kpi-grid" id="kpi-grid"></div>
   <div class="section">
@@ -150,16 +139,22 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
   <div class="two-col">
     <div class="section">
       <div class="section-title">종합 만족도 분포 (10점 만점)</div>
-      <div class="card"><div class="chart-wrap" style="height:200px"><canvas id="overallChart"></canvas></div></div>
+      <div class="card">
+        <div class="chart-wrap" style="height:200px"><canvas id="overallChart"></canvas></div>
+        <div id="overall-dist-legend" style="margin-top:10px"></div>
+      </div>
     </div>
     <div class="section">
       <div class="section-title">수강 결정 만족도 — 1년 미만 응답자 (5점 만점)</div>
-      <div class="card"><div class="chart-wrap" style="height:200px"><canvas id="satChart"></canvas></div></div>
+      <div class="card">
+        <div class="chart-wrap" style="height:200px"><canvas id="satChart"></canvas></div>
+        <div id="sat-dist-legend" style="margin-top:10px"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ── TAB: 응답자 현황 ── -->
+<!-- ── 응답자 현황 ── -->
 <div id="tab-members" class="tab">
   <div class="two-col" style="margin-bottom:1.5rem">
     <div class="section">
@@ -171,14 +166,26 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
       <div class="card"><div class="chart-wrap" style="height:200px"><canvas id="gradeChart"></canvas></div></div>
     </div>
   </div>
+
   <div class="section">
     <div class="section-title">수강 기간 분포</div>
-    <div class="card"><div class="chart-wrap" style="height:180px"><canvas id="durationChart"></canvas></div></div>
+    <div class="card">
+      <div class="chart-wrap" style="height:180px"><canvas id="durationChart"></canvas></div>
+      <div id="duration-legend" style="margin-top:10px"></div>
+    </div>
   </div>
+
   <div class="section">
     <div class="section-title">처음 등록 계기 (복수 응답)</div>
-    <div class="card" id="register-bars"></div>
+    <div class="card">
+      <div id="register-bars"></div>
+      <div class="etc-box" id="register-etc-box" style="display:none">
+        <div class="etc-label">기타 주관식 응답</div>
+        <ul class="comment-list" id="register-etc-list"></ul>
+      </div>
+    </div>
   </div>
+
   <div class="section">
     <div class="section-title">코딩을 배우는 목적 (복수 응답)</div>
     <div class="card" id="purpose-bars"></div>
@@ -186,7 +193,7 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
 
   <hr class="divider">
 
-  <!-- 1년 미만 전용 -->
+  <!-- 1년 미만 -->
   <div class="segment-section short">
     <div class="segment-badge short">📋 1년 미만 수강자 대상 문항 · 132명</div>
     <div class="segment-title">수강 초기 경험</div>
@@ -198,6 +205,10 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
       <div class="card-inset">
         <div class="card-title">수강 전 걱정·망설임</div>
         <div id="worry-bars"></div>
+        <div class="etc-box" id="worry-etc-box" style="display:none">
+          <div class="etc-label">기타 주관식 응답</div>
+          <ul class="comment-list" id="worry-etc-list"></ul>
+        </div>
       </div>
     </div>
     <div class="two-col">
@@ -212,7 +223,7 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
     </div>
   </div>
 
-  <!-- 1년 이상 전용 -->
+  <!-- 1년 이상 -->
   <div class="segment-section long" style="margin-top:1.25rem">
     <div class="segment-badge long">📋 1년 이상 수강자 대상 문항 · 68명</div>
     <div class="segment-title">장기 수강자 인사이트</div>
@@ -229,27 +240,14 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
   </div>
 </div>
 
-<!-- ── TAB: 만족도 분석 ── -->
+<!-- ── 만족도 분석 ── -->
 <div id="tab-scores" class="tab">
   <div class="two-col" style="margin-bottom:1.5rem">
-    <div class="card">
-      <div class="card-title">튜터 만족도 분포</div>
-      <div id="dist-tutor"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">커리큘럼 만족도 분포</div>
-      <div id="dist-curriculum"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">화상 수업 환경 만족도</div>
-      <div id="dist-online"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">운영 서비스 만족도</div>
-      <div id="dist-ops"></div>
-    </div>
+    <div class="card"><div class="card-title">튜터 만족도 분포</div><div id="dist-tutor"></div></div>
+    <div class="card"><div class="card-title">커리큘럼 만족도 분포</div><div id="dist-curriculum"></div></div>
+    <div class="card"><div class="card-title">화상 수업 환경 만족도</div><div id="dist-online"></div></div>
+    <div class="card"><div class="card-title">운영 서비스 만족도</div><div id="dist-ops"></div></div>
   </div>
-
   <div class="two-col">
     <div class="section">
       <div class="section-title">튜터 만족 이유 키워드</div>
@@ -282,7 +280,7 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
   </div>
 </div>
 
-<!-- ── TAB: 프로그램·관심 ── -->
+<!-- ── 프로그램·관심 ── -->
 <div id="tab-programs" class="tab">
   <div class="two-col" style="margin-bottom:1.5rem">
     <div class="section">
@@ -323,7 +321,7 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
   </div>
 </div>
 
-<!-- ── TAB: 주관식 분석 ── -->
+<!-- ── 주관식 분석 ── -->
 <div id="tab-qualitative" class="tab">
   <div class="section">
     <div class="section-title">칭찬 키워드</div>
@@ -335,9 +333,8 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
         <span class="pill accent">수업 알림 ★</span>
         <span class="pill accent">스케줄 유연성 ★</span>
         <span class="pill accent">화상 수업 편의 ★</span>
-        <span class="pill accent">1:1 밀착관리 ★</span>
-        <span class="pill accent">아이 만족도 ★</span>
-        <span class="pill accent">소통 잘 됨 ★</span>
+        <span class="pill accent">자율학습 시스템 ★</span>
+        <span class="pill accent">다양한 프로그램 ★</span>
       </div>
     </div>
   </div>
@@ -349,9 +346,10 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
         <span class="pill warn">수업 시간 연장 ★★</span>
         <span class="pill warn">소통 채널 개선 ★</span>
         <span class="pill warn">재수강 혜택 ★</span>
-        <span class="pill warn">공지 알림 개선 ★</span>
-        <span class="pill">자습 시간 강화</span>
-        <span class="pill">이벤트 확대</span>
+        <span class="pill warn">튜터 편차 ★</span>
+        <span class="pill warn">복습 자료 부재 ★</span>
+        <span class="pill warn">사이트 UX 개선 ★</span>
+        <span class="pill">수강 현황 페이지 필요</span>
       </div>
     </div>
   </div>
@@ -370,7 +368,6 @@ body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; backgroun
 </main>
 
 <script>
-const COLORS = ['#2f5fc4','#1da575','#e05c2a','#9066d4','#c49a0a','#888880'];
 let charts = {};
 
 function switchTab(id, btn) {
@@ -384,8 +381,7 @@ async function loadSurvey(path) {
   try {
     const res = await fetch(path);
     if (!res.ok) throw new Error('파일 없음');
-    const data = await res.json();
-    renderAll(data);
+    renderAll(await res.json());
   } catch(e) { console.error(e); }
 }
 
@@ -400,45 +396,42 @@ function renderAll(d) {
   renderCourseChart(d);
   renderGradeChart(d);
   renderDurationChart(d);
-  renderBarSection('register-bars',   d.register,    '#2f5fc4', d.total);
-  renderBarSection('purpose-bars',    d.purpose,     '#2f5fc4', d.total);
-  renderBarSection('reg-reason-bars', d.reg_reason,  '#2f5fc4', d.short_total);
-  renderBarSection('worry-bars',      d.worry,       '#e05c2a', d.short_total);
-  renderStarDistShort('dist-sat-short', d.dist_sat, 5, '#2f5fc4', d.short_total);
-  renderBarSection('needs-bars',      d.needs,       '#2f5fc4', d.short_total);
-  renderBarSection('longterm-bars',   d.longterm,    '#1da575', d.long_total);
-  renderBarSection('enhance-bars',    d.enhance,     '#1da575', d.long_total);
+  renderBarWithEtc('register-bars', d.register, '#2f5fc4', d.total, 'register-etc-box', 'register-etc-list', d.register_etc);
+  renderBarSection('purpose-bars',    d.purpose,    '#2f5fc4', d.total);
+  renderBarSection('reg-reason-bars', d.reg_reason, '#2f5fc4', d.short_total);
+  renderBarWithEtc('worry-bars', d.worry, '#e05c2a', d.short_total, 'worry-etc-box', 'worry-etc-list', d.worry_etc);
+  renderStarDistBox('dist-sat-short', d.dist_sat, 5, '#2f5fc4', d.short_total);
+  renderBarSection('needs-bars',      d.needs,      '#2f5fc4', d.short_total);
+  renderBarSection('longterm-bars',   d.longterm,   '#1da575', d.long_total);
+  renderBarSection('enhance-bars',    d.enhance,    '#1da575', d.long_total);
   renderProgPartChart(d);
-  renderBarSection('prog-yes-bars',   d.prog_yes,    '#1da575', d.total);
-  renderBarSection('prog-no-bars',    d.prog_no,     '#9066d4', d.total);
-  renderBarSection('future-bars',     d.future,      '#2f5fc4', d.total);
+  renderBarSection('prog-yes-bars',   d.prog_yes,   '#1da575', d.total);
+  renderBarSection('prog-no-bars',    d.prog_no,    '#9066d4', d.total);
+  renderBarSection('future-bars',     d.future,     '#2f5fc4', d.total);
   renderComments('best-list',    d.best);
   renderComments('improve-list', d.improve);
 }
 
 function renderKPI(d) {
   const items = [
-    { val: d.scores.overall,    unit: '/10', label: '종합 만족도',    sub: '평균 점수' },
-    { val: d.scores.tutor,      unit: '/5',  label: '튜터 만족도',    sub: (d.scores.tutor/5*100).toFixed(0)+'%' },
-    { val: d.scores.curriculum, unit: '/5',  label: '커리큘럼 만족도', sub: (d.scores.curriculum/5*100).toFixed(0)+'%' },
-    { val: d.scores.ops,        unit: '/5',  label: '운영 서비스',    sub: (d.scores.ops/5*100).toFixed(0)+'%' },
-    { val: d.total,             unit: '명',  label: '총 응답자',      sub: 'MAU 530명 대비 '+(d.total/530*100).toFixed(0)+'%' },
+    {val:d.scores.overall, unit:'/10', label:'종합 만족도',    sub:'평균 점수'},
+    {val:d.scores.tutor,   unit:'/5',  label:'튜터 만족도',    sub:(d.scores.tutor/5*100).toFixed(0)+'%'},
+    {val:d.scores.curriculum,unit:'/5',label:'커리큘럼 만족도', sub:(d.scores.curriculum/5*100).toFixed(0)+'%'},
+    {val:d.scores.ops,     unit:'/5',  label:'운영 서비스',    sub:(d.scores.ops/5*100).toFixed(0)+'%'},
+    {val:d.total,          unit:'명',  label:'총 응답자',      sub:'MAU 530명 대비 '+(d.total/530*100).toFixed(0)+'%'},
   ];
   document.getElementById('kpi-grid').innerHTML = items.map(i =>
-    `<div class="kpi-card">
-      <div class="kpi-val">${i.val}<span>${i.unit}</span></div>
-      <div class="kpi-label">${i.label}</div>
-      <div class="kpi-sub">${i.sub}</div>
-    </div>`
+    `<div class="kpi-card"><div class="kpi-val">${i.val}<span>${i.unit}</span></div>
+     <div class="kpi-label">${i.label}</div><div class="kpi-sub">${i.sub}</div></div>`
   ).join('');
 }
 
 function renderScoreBars(d) {
   const items = [
-    { label: '튜터 만족도',   val: d.scores.tutor,      color: '#2f5fc4' },
-    { label: '운영 서비스',   val: d.scores.ops,        color: '#1da575' },
-    { label: '화상 수업 환경', val: d.scores.online,     color: '#9066d4' },
-    { label: '커리큘럼',      val: d.scores.curriculum, color: '#e05c2a' },
+    {label:'튜터 만족도',   val:d.scores.tutor,       color:'#2f5fc4'},
+    {label:'운영 서비스',   val:d.scores.ops,         color:'#1da575'},
+    {label:'화상 수업 환경', val:d.scores.online,      color:'#9066d4'},
+    {label:'커리큘럼',      val:d.scores.curriculum,  color:'#e05c2a'},
   ];
   document.getElementById('score-bars').innerHTML = items.map(i =>
     `<div class="bar-row">
@@ -455,23 +448,33 @@ function makeChart(id, type, labels, data, colors, extraOpts={}) {
   if (!ctx) return;
   charts[id] = new Chart(ctx, {
     type,
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0 }] },
+    data: {labels, datasets:[{data, backgroundColor:colors, borderWidth:0}]},
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label: ctx => {
           const v = ctx.parsed.y !== undefined ? ctx.parsed.y : ctx.parsed;
-          return v + '명';
+          return v+'명';
         }}}
       },
-      scales: type === 'bar' ? {
-        x: { ticks: { font:{size:11}, color:'#888' }, grid: { display:false } },
-        y: { ticks: { font:{size:11}, color:'#888' }, grid: { color:'#f0eeea' } }
+      scales: type==='bar' ? {
+        x:{ticks:{font:{size:11},color:'#888'},grid:{display:false}},
+        y:{ticks:{font:{size:11},color:'#888'},grid:{color:'#f0eeea'}}
       } : {},
       ...extraOpts
     }
   });
+}
+
+// 비율 포함 레전드 행
+function renderDistLegend(id, dist, total) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = Object.entries(dist).map(([k,v]) => {
+    const pct = total ? (v/total*100).toFixed(0) : 0;
+    return `<span style="font-size:11px;color:var(--muted);margin-right:12px">${k}점: <b style="color:var(--text)">${v}명 (${pct}%)</b></span>`;
+  }).join('');
 }
 
 function renderOverallChart(d) {
@@ -480,40 +483,26 @@ function renderOverallChart(d) {
     Object.keys(dist).map(k=>k+'점'), Object.values(dist),
     ['#c9d7f7','#b5c9f5','#9ab4f0','#7099eb','#4370d6','#2f5fc4']
   );
+  renderDistLegend('overall-dist-legend', dist, d.total);
 }
 
 function renderSatChart(d) {
   const dist = d.dist_sat;
-  const total = Object.values(dist).reduce((a,b)=>a+b,0);
   makeChart('satChart','bar',
     Object.keys(dist).map(k=>k+'점'), Object.values(dist),
     ['#fbe5d9','#f5bc9b','#e05c2a']
   );
+  renderDistLegend('sat-dist-legend', dist, d.short_total);
 }
 
 function renderDists(d) {
-  renderStarDist('dist-tutor',     d.dist.tutor,       5, '#2f5fc4', d.total);
-  renderStarDist('dist-curriculum',d.dist.curriculum,  5, '#1da575', d.total);
-  renderStarDist('dist-online',    d.dist.online,      5, '#9066d4', d.total);
-  renderStarDist('dist-ops',       d.dist.ops,         5, '#e05c2a', d.total);
+  renderStarDistBox('dist-tutor',      d.dist.tutor,      5, '#2f5fc4', d.total);
+  renderStarDistBox('dist-curriculum', d.dist.curriculum, 5, '#1da575', d.total);
+  renderStarDistBox('dist-online',     d.dist.online,     5, '#9066d4', d.total);
+  renderStarDistBox('dist-ops',        d.dist.ops,        5, '#e05c2a', d.total);
 }
 
-function renderStarDist(id, dist, max, color, total) {
-  const maxVal = Math.max(...Object.values(dist));
-  let html = '';
-  for (let i = 1; i <= max; i++) {
-    const cnt = dist[String(i)] || 0;
-    const pct = total ? (cnt/total*100).toFixed(0) : 0;
-    html += `<div class="star-row">
-      <div class="star-num">${i}</div>
-      <div class="star-track"><div class="star-fill" style="width:${cnt/maxVal*100}%;background:${color}"></div></div>
-      <div class="star-cnt">${cnt}명 (${pct}%)</div>
-    </div>`;
-  }
-  document.getElementById(id).innerHTML = html;
-}
-
-function renderStarDistShort(id, dist, max, color, total) {
+function renderStarDistBox(id, dist, max, color, total) {
   const maxVal = Math.max(...Object.values(dist));
   let html = '';
   for (let i = 1; i <= max; i++) {
@@ -528,7 +517,6 @@ function renderStarDistShort(id, dist, max, color, total) {
   document.getElementById(id).innerHTML = html;
 }
 
-// 비율 포함 바 렌더링
 function renderBarSection(id, obj, color, total) {
   if (!obj || !document.getElementById(id)) return;
   const max = Math.max(...Object.values(obj));
@@ -537,23 +525,26 @@ function renderBarSection(id, obj, color, total) {
     return `<div class="bar-row">
       <div class="bar-label">${k}</div>
       <div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%;background:${color}"></div></div>
-      <div class="bar-val">${v}명 ${pct ? '('+pct+'%)' : ''}</div>
+      <div class="bar-val">${v}명${pct?' ('+pct+'%)':''}</div>
     </div>`;
   }).join('');
+}
+
+// 기타 섹션 포함 바
+function renderBarWithEtc(barId, obj, color, total, etcBoxId, etcListId, etcItems) {
+  renderBarSection(barId, obj, color, total);
+  if (etcItems && etcItems.length > 0) {
+    document.getElementById(etcBoxId).style.display = 'block';
+    document.getElementById(etcListId).innerHTML = etcItems.map(t => `<li>${t}</li>`).join('');
+  }
 }
 
 function renderCourseChart(d) {
   makeChart('courseChart','doughnut',
     Object.keys(d.course), Object.values(d.course),
     ['#2f5fc4','#1da575','#e05c2a','#9066d4'],
-    { plugins: {
-        legend:{ display:true, position:'bottom', labels:{font:{size:11},color:'#888',boxWidth:10} },
-        tooltip:{ callbacks:{ label: ctx => {
-          const pct = (ctx.parsed/d.total*100).toFixed(0);
-          return ctx.label+': '+ctx.parsed+'명 ('+pct+'%)';
-        }}}
-      }
-    }
+    {plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},color:'#888',boxWidth:10}},
+      tooltip:{callbacks:{label:ctx=>{const p=(ctx.parsed/d.total*100).toFixed(0);return ctx.label+': '+ctx.parsed+'명 ('+p+'%)'}}}}}
   );
 }
 
@@ -561,22 +552,28 @@ function renderGradeChart(d) {
   makeChart('gradeChart','doughnut',
     Object.keys(d.grade), Object.values(d.grade),
     ['#2f5fc4','#5b85d8','#8aaee8','#b5cef4'],
-    { plugins: {
-        legend:{ display:true, position:'bottom', labels:{font:{size:11},color:'#888',boxWidth:10} },
-        tooltip:{ callbacks:{ label: ctx => {
-          const pct = (ctx.parsed/d.total*100).toFixed(0);
-          return ctx.label+': '+ctx.parsed+'명 ('+pct+'%)';
-        }}}
-      }
-    }
+    {plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},color:'#888',boxWidth:10}},
+      tooltip:{callbacks:{label:ctx=>{const p=(ctx.parsed/d.total*100).toFixed(0);return ctx.label+': '+ctx.parsed+'명 ('+p+'%)'}}}}}
   );
 }
 
 function renderDurationChart(d) {
+  const vals = Object.values(d.duration);
+  const total = vals.reduce((a,b)=>a+b,0);
   makeChart('durationChart','bar',
-    Object.keys(d.duration), Object.values(d.duration),
-    ['#b5cef4','#5b85d8','#2f5fc4','#1a3d99']
+    Object.keys(d.duration), vals,
+    ['#b5cef4','#5b85d8','#2f5fc4','#1a3d99'],
+    {plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>{const p=(ctx.parsed.y/total*100).toFixed(0);return ctx.parsed.y+'명 ('+p+'%)'}}}}}
   );
+  // 바 차트 아래 비율 레전드
+  const el = document.getElementById('duration-legend');
+  if (el) {
+    el.innerHTML = Object.entries(d.duration).map(([k,v]) => {
+      const pct = (v/total*100).toFixed(0);
+      return `<span style="font-size:11px;color:var(--muted);margin-right:12px">${k}: <b style="color:var(--text)">${v}명 (${pct}%)</b></span>`;
+    }).join('');
+  }
 }
 
 function renderProgPartChart(d) {
@@ -585,20 +582,14 @@ function renderProgPartChart(d) {
   makeChart('progPartChart','doughnut',
     Object.keys(d.prog_part), vals,
     ['#2f5fc4','#e8e6df'],
-    { plugins: {
-        legend:{ display:true, position:'bottom', labels:{font:{size:11},color:'#888',boxWidth:10} },
-        tooltip:{ callbacks:{ label: ctx => {
-          const pct = (ctx.parsed/total*100).toFixed(0);
-          return ctx.label+': '+ctx.parsed+'명 ('+pct+'%)';
-        }}}
-      }
-    }
+    {plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},color:'#888',boxWidth:10}},
+      tooltip:{callbacks:{label:ctx=>{const p=(ctx.parsed/total*100).toFixed(0);return ctx.label+': '+ctx.parsed+'명 ('+p+'%)'}}}}}
   );
 }
 
 function renderComments(id, list) {
   if (!list || !list.length) return;
-  document.getElementById(id).innerHTML = list.slice(0,8).map(t => `<li>${t}</li>`).join('');
+  document.getElementById(id).innerHTML = list.map(t=>`<li>${t}</li>`).join('');
 }
 
 loadSurvey('data/survey_2026_H1.json');
